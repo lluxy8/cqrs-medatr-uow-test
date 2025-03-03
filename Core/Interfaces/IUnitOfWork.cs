@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    interface IUnitOfWork
+    public interface IUnitOfWork
     {
     }
 }
