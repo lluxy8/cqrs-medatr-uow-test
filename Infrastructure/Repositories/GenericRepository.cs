@@ -19,22 +19,28 @@ namespace Infrastructure.Repositories
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<T> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
-        public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
-        public async Task UpdateAsync(T entity)
+        public async Task<T> GetByIdAsync(Guid id, CancellationToken cancellationToke) => await _dbSet.FindAsync(id, cancellationToke);
+        public async Task AddAsync(T entity, CancellationToken cancellationToke) => await _dbSet.AddAsync(entity, cancellationToke);
+        public async Task UpdateAsync(T entity, CancellationToken cancellationToke)
         {
             _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToke);
         }
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
-            var entity = await GetByIdAsync(id);
-            if (entity != null)
+            var entity = await _dbSet.FindAsync(new object[] { id }, cancellationToken);
+            if (entity == null)
             {
-                _dbSet.Remove(entity);
-                await _context.SaveChangesAsync();
+                return false; 
             }
+
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+            return true; 
         }
-        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            return await _dbSet.ToListAsync(cancellationToken);
+        }
     }
 }

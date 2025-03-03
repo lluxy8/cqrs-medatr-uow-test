@@ -9,7 +9,7 @@ namespace Core.Interfaces
 {
     public interface IProductRepository : IGenericRepository<ProductEntity>
     {
-        Task<ProductEntity?> GetProductWithUser(Guid id);
-        Task<IEnumerable<ProductEntity>> GetAllProductsWithUser(Guid id);
+        Task<ProductEntity?> GetProductWithUser(Guid id, CancellationToken cancellationToken);
+        Task<IEnumerable<ProductEntity>> GetAllProductsWithUser(CancellationToken cancellationToken);
     }
 }

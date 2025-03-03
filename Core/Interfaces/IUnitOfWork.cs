@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
+        IUserRepository UserRepository { get; }
+        IProductRepository ProductRepository { get; }
+        Task<int> SaveChangesAsync();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 }

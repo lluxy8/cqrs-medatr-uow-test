@@ -10,6 +10,6 @@ namespace Core.Interfaces
     public interface IUserRepository : IGenericRepository<UserEntity>
     {
         Task<UserEntity?> GetUserWithProducts(Guid id);
-        Task<IEnumerable<UserEntity>> GetAllUsersWithProducts();
+        Task<IEnumerable<UserEntity>> GetAllUsersWithProducts(CancellationToken cancellationToken);
     }
 }
