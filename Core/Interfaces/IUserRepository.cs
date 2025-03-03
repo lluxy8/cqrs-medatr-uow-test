@@ -9,7 +9,7 @@ namespace Core.Interfaces
 {
     public interface IUserRepository : IGenericRepository<UserEntity>
     {
-        Task<UserEntity?> GetUserWithProducts(Guid id);
+        Task<UserEntity?> GetUserWithProducts(Guid id, CancellationToken cancellationToken);
         Task<IEnumerable<UserEntity>> GetAllUsersWithProducts(CancellationToken cancellationToken);
     }
 }

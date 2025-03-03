@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Application.Handlers.UserHandlers
 {
-    class RemoveUserCommandHandler : IRequestHandler<RemoveUserCommand, bool>
+    public class RemoveUserCommandHandler : IRequestHandler<RemoveUserCommand, bool>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

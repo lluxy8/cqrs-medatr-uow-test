@@ -18,14 +18,14 @@ namespace Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ProductEntity>> GetAllProductsWithUser(Guid id)
+        public async Task<IEnumerable<ProductEntity>> GetAllProductsWithUser(CancellationToken cancellationToken)
         {
-            return await _context.Products.Include(x => x.User).ToListAsync() ?? [];
+            return await _context.Products.Include(x => x.User).ToListAsync(cancellationToken) ?? [];
         }
 
-        public async Task<ProductEntity?> GetProductWithUser(Guid id)
+        public async Task<ProductEntity?> GetProductWithUser(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Products.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Products.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             
         }
     }
