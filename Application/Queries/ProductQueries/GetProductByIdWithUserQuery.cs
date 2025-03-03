@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Application.Queries.ProductQueries
 {
-    public record GetProductByIdWithUserQuery(Guid Id) : IRequest<ProductEntity>;
+    public record GetProductByIdWithUserQuery(Guid Id) : IRequest<ProductViewModelWithUser>;
 }

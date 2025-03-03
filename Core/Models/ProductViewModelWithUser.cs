@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Core.Models
 {
-    public class UserWithProductsViewModel
+    public class ProductViewModelWithUser
     {
         public Guid Id { get; set; }
-        public string Username { get; set; }
         public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Email { get; set; }
-        public IEnumerable<ProductViewModel> Products { get; set; }
+        public string Description { get; set; }
+        public decimal Price { get; set; }
+        public Guid UserId { get; set; }
+        public UserViewModel User { get; set; }
     }
 }
