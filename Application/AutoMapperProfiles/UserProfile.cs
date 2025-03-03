@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core.DTOs;
 using Core.Entities;
+using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,11 @@ namespace Application.AutoMapperProfiles
         {
             CreateMap<UserCreateDto, UserEntity>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.Products, opt => opt.Ignore()); 
+                .ForMember(dest => dest.Products, opt => opt.Ignore());
+
+            CreateMap<UserEntity, UserViewModel>();
+
+            CreateMap<UserEntity, UserWithProductsViewModel>();
         }
     }
 }
