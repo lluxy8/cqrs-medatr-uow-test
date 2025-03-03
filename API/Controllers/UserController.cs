@@ -1,8 +1,10 @@
 ﻿using Application.Commands.UserCommands;
 using Application.Queries.UserQueries;
 using Core.DTOs;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers
 {
@@ -11,10 +13,12 @@ namespace API.Controllers
     public class UserController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IValidator<UserCreateDto> _validator;
 
-        public UserController(IMediator mediator)
+        public UserController(IMediator mediator, IValidator<UserCreateDto> validator)
         {
-            _mediator = mediator;   
+            _mediator = mediator;
+            _validator = validator;
         }
 
         [HttpGet]
@@ -48,6 +52,13 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateDto dto, CancellationToken cancellationToken)
         {
+            var validationResult = await _validator.ValidateAsync(dto, cancellationToken);
+
+            if (!validationResult.IsValid)
+            { 
+                return BadRequest(validationResult.Errors);
+            }
+
             var userId = await _mediator.Send(new CreateUserCommand(dto), cancellationToken);
             return CreatedAtAction(nameof(GetUserById), new { id = userId }, new { Id = userId });
         }

@@ -26,7 +26,8 @@ namespace Infrastructure.Repositories
         public async Task<ProductEntity?> GetProductWithUser(Guid id, CancellationToken cancellationToken)
         {
             return await _context.Products.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-            
+          
         }
+
     }
 }

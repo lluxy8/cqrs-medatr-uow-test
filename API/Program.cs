@@ -11,15 +11,19 @@ using Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Reflection;
+using FluentValidation;
+using Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommandHandler).Assembly));
 
-builder.Services.AddControllers();
+builder.Services.AddValidatorsFromAssembly(typeof(UserCreateValidator).Assembly);
 
+builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));

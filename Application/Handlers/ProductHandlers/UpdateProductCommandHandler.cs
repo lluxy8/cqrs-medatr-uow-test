@@ -27,14 +27,22 @@ namespace Application.Handlers.ProductHandlers
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var product = _mapper.Map<ProductEntity>(request.dto);
-                product.Id = request.id;    
+                var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(request.id, cancellationToken);
+                if (existingProduct == null)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    return Guid.Empty;
+                }
 
-                await _unitOfWork.ProductRepository.UpdateAsync(product, cancellationToken);
+                _mapper.Map(request.dto, existingProduct);
+
+                existingProduct.Id = request.id;
+
+                await _unitOfWork.ProductRepository.UpdateAsync(existingProduct, cancellationToken);
 
                 await _unitOfWork.CommitTransactionAsync();
 
-                return product.Id;
+                return existingProduct.Id;
             }
             catch (Exception)
             {

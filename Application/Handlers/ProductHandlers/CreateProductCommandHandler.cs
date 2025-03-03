@@ -31,8 +31,17 @@ namespace Application.Handlers.ProductHandlers
 
                 var product = _mapper.Map<ProductEntity>(request.dto);
 
-                await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
+                var user = await _unitOfWork.UserRepository.GetByIdAsync(request.dto.UserId, cancellationToken);
+                if(user == null)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    return Guid.Empty;
+                }
 
+                product.User = user;
+
+                await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
+                
                 await _unitOfWork.CommitTransactionAsync();
 
                 return product.Id;

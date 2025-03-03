@@ -3,6 +3,7 @@ using Application.Commands.UserCommands;
 using Application.Queries.ProductQueries;
 using Application.Queries.UserQueries;
 using Core.DTOs;
+using Core.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,11 +51,14 @@ namespace API.Controllers
         public async Task<IActionResult> GetProductByIdWithUser([FromBody] ProductCreateDto dto, CancellationToken cancellationToken)
         {
             var productId = await _mediator.Send(new CreateProductCommand(dto), cancellationToken);
+            if (productId == Guid.Empty)
+                return NotFound();
+
             return CreatedAtAction(nameof(GetProductById), new { id = productId }, new { Id = productId });
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductCreateDto dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductViewModel dto, CancellationToken cancellationToken)
         {
             var updatedProductId = await _mediator.Send(new UpdateProductCommand(id, dto), cancellationToken);
             return updatedProductId == Guid.Empty ? NotFound() : NoContent();

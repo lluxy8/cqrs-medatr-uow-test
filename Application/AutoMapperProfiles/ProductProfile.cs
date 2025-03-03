@@ -14,13 +14,16 @@ namespace Application.AutoMapperProfiles
     {
         public ProductProfile()
         {
-            CreateMap<UserCreateDto, UserEntity>()
+            CreateMap<ProductCreateDto, ProductEntity>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.Products, opt => opt.Ignore());
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore());
 
             CreateMap<ProductEntity, ProductViewModel>();
 
             CreateMap<ProductEntity, ProductViewModelWithUser>();
+
+            CreateMap<ProductViewModel, ProductEntity>();
         }
     }
 }
