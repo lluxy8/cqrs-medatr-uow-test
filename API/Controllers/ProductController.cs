@@ -61,7 +61,7 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductViewModel dto, CancellationToken cancellationToken)
         {
             var updatedProductResult = await _mediator.Send(new UpdateProductCommand(id, dto), cancellationToken);
-            return updatedProductResult.Data == Guid.Empty ? NotFound() : NoContent();
+            return updatedProductResult.Data == Guid.Empty ? NotFound(updatedProductResult.Message) : Ok(updatedProductResult.Data);
         }
 
         [HttpDelete("{id:guid}")]

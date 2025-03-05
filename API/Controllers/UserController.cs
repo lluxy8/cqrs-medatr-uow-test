@@ -67,14 +67,14 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserCreateDto dto, CancellationToken cancellationToken)
         {
             var updatedUserResult = await _mediator.Send(new UpdateUserCommand(id, dto), cancellationToken);
-            return updatedUserResult.Data == Guid.Empty ? NotFound() : NoContent();
+            return updatedUserResult.Data == Guid.Empty ? NotFound(updatedUserResult.Message) : Ok(updatedUserResult.Data);
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
             var deleteResult = await _mediator.Send(new RemoveUserCommand(id), cancellationToken);
-            return deleteResult.Data ? NoContent() : NotFound();
+            return deleteResult.Data ? NoContent() : NotFound(deleteResult.Message);
         }
     }
 }
