@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.Interfaces;
 using Core.Models;
 using MediatR;
 using System;
@@ -9,5 +10,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.ProductCommands
 {
-    public record UpdateProductCommand(Guid id, ProductViewModel dto) : IRequest<Guid>;
+    public record UpdateProductCommand(Guid id, ProductViewModel dto) : IRequest<IResult<Guid>>;
 }

@@ -48,27 +48,27 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetProductByIdWithUser([FromBody] ProductCreateDto dto, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto dto, CancellationToken cancellationToken)
         {
-            var productId = await _mediator.Send(new CreateProductCommand(dto), cancellationToken);
-            if (productId == Guid.Empty)
-                return NotFound();
+            var productResult = await _mediator.Send(new CreateProductCommand(dto), cancellationToken);
+            if (productResult.Data == Guid.Empty)
+                return NotFound(productResult.Message);
 
-            return CreatedAtAction(nameof(GetProductById), new { id = productId }, new { Id = productId });
+            return CreatedAtAction(nameof(GetProductById), new { id = productResult.Data }, new { Id = productResult.Data });
         }
 
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductViewModel dto, CancellationToken cancellationToken)
         {
-            var updatedProductId = await _mediator.Send(new UpdateProductCommand(id, dto), cancellationToken);
-            return updatedProductId == Guid.Empty ? NotFound() : NoContent();
+            var updatedProductResult = await _mediator.Send(new UpdateProductCommand(id, dto), cancellationToken);
+            return updatedProductResult.Data == Guid.Empty ? NotFound() : NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
         {
-            var isDeleted = await _mediator.Send(new RemoveProductCommand(id), cancellationToken);
-            return isDeleted ? NoContent() : NotFound();
+            var deleteResult = await _mediator.Send(new RemoveProductCommand(id), cancellationToken);
+            return deleteResult.Data ? NoContent() : NotFound(deleteResult.Message);
         }
     }
 }

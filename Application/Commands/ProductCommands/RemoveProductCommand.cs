@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Core.Interfaces;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.ProductCommands
 {
-    public record RemoveProductCommand(Guid id) : IRequest<bool>;
+    public record RemoveProductCommand(Guid id) : IRequest<IResult<bool>>;
 }

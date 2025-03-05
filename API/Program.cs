@@ -13,6 +13,8 @@ using System;
 using System.Reflection;
 using FluentValidation;
 using Application.Validators;
+using MediatR;
+using Application.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommandHandler).Assembly));
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
 builder.Services.AddValidatorsFromAssembly(typeof(UserCreateValidator).Assembly);
 

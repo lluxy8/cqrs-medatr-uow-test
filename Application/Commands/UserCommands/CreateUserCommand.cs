@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.Interfaces;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.UserCommands
 {
-    public record CreateUserCommand(UserCreateDto dto) : IRequest<Guid>;
+    public record CreateUserCommand(UserCreateDto dto) : IRequest<IResult<Guid>>;
 }

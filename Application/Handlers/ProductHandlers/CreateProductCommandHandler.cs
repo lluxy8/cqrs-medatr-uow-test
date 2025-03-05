@@ -3,6 +3,7 @@ using AutoMapper;
 using Azure.Core;
 using Core.Entities;
 using Core.Interfaces;
+using Core.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Application.Handlers.ProductHandlers
 {
-    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
+    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, IResult<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -23,35 +24,21 @@ namespace Application.Handlers.ProductHandlers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<IResult<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            try
+            var product = _mapper.Map<ProductEntity>(request.dto);
+
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(request.dto.UserId, cancellationToken);
+
+            if (user is null)
             {
-                await _unitOfWork.BeginTransactionAsync();
-
-                var product = _mapper.Map<ProductEntity>(request.dto);
-
-                var user = await _unitOfWork.UserRepository.GetByIdAsync(request.dto.UserId, cancellationToken);
-                
-                if(user is null)
-                {
-                    await _unitOfWork.RollbackTransactionAsync();
-                    return Guid.Empty;
-                }
-
-                product.User = user;
-
-                await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
-                
-                await _unitOfWork.CommitTransactionAsync();
-
-                return product.Id;
+                return Result<Guid>.Failure(Guid.Empty, "User not found");
             }
-            catch (Exception)
-            {
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
-            }
+
+            product.User = user;
+
+            await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
+            return Result<Guid>.Success(product.Id);
         }
     }
 }

@@ -2,6 +2,7 @@
 using Application.Commands.UserCommands;
 using AutoMapper;
 using Core.Interfaces;
+using Core.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.Handlers.UserHandlers
 {
-    public class RemoveUserCommandHandler : IRequestHandler<RemoveUserCommand, bool>
+    public class RemoveUserCommandHandler : IRequestHandler<RemoveUserCommand, IResult<bool>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -22,30 +23,15 @@ namespace Application.Handlers.UserHandlers
             _mapper = mapper;
         }
 
-        public async Task<bool> Handle(RemoveUserCommand request, CancellationToken cancellationToken)
+        public async Task<IResult<bool>> Handle(RemoveUserCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                await _unitOfWork.BeginTransactionAsync();
 
-                var isDeleted = await _unitOfWork.UserRepository.DeleteAsync(request.id, cancellationToken);
+            var isDeleted = await _unitOfWork.UserRepository.DeleteAsync(request.id, cancellationToken);
 
-                if (isDeleted)
-                {
-                    await _unitOfWork.CommitTransactionAsync();
-                    return true;
-                }
-                else
-                {
-                    await _unitOfWork.RollbackTransactionAsync();
-                    return false;
-                }
-            }
-            catch
-            {
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
-            }
+            if (isDeleted)
+                return Result<bool>.Success(true);
+
+            return Result<bool>.Failure(false, "Failed deleting user");
         }
     }
 }

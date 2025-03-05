@@ -2,6 +2,7 @@
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
+using Core.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.Handlers.ProductHandlers
 {
-    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Guid>
+    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, IResult<Guid>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -21,34 +22,22 @@ namespace Application.Handlers.ProductHandlers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public async Task<Guid> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task<IResult<Guid>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            try
+
+            var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(request.id, cancellationToken);
+            if (existingProduct is null)
             {
-                await _unitOfWork.BeginTransactionAsync();
-
-                var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(request.id, cancellationToken);
-                if (existingProduct is null)
-                {
-                    await _unitOfWork.RollbackTransactionAsync();
-                    return Guid.Empty;
-                }
-
-                _mapper.Map(request.dto, existingProduct);
-
-                existingProduct.Id = request.id;
-
-                await _unitOfWork.ProductRepository.UpdateAsync(existingProduct, cancellationToken);
-
-                await _unitOfWork.CommitTransactionAsync();
-
-                return existingProduct.Id;
+                return Result<Guid>.Failure(Guid.Empty, "Product not found");
             }
-            catch (Exception)
-            {
-                await _unitOfWork.RollbackTransactionAsync();
-                throw;
-            }
+
+            _mapper.Map(request.dto, existingProduct);
+
+            existingProduct.Id = request.id;
+
+            await _unitOfWork.ProductRepository.UpdateAsync(existingProduct, cancellationToken);
+
+            return Result<Guid>.Success(existingProduct.Id);
         }
     }
 }

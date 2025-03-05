@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.Interfaces;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Application.Commands.ProductCommands
 {
-    public record CreateProductCommand(ProductCreateDto dto) : IRequest<Guid>;
+    public record CreateProductCommand(ProductCreateDto dto) : IRequest<IResult<Guid>>;
 }

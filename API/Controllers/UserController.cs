@@ -60,21 +60,21 @@ namespace API.Controllers
             }
 
             var userId = await _mediator.Send(new CreateUserCommand(dto), cancellationToken);
-            return CreatedAtAction(nameof(GetUserById), new { id = userId }, new { Id = userId });
+            return CreatedAtAction(nameof(GetUserById), new { id = userId.Data }, new { Id = userId.Data });
         }
 
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserCreateDto dto, CancellationToken cancellationToken)
         {
-            var updatedUserId = await _mediator.Send(new UpdateUserCommand(id, dto), cancellationToken);
-            return updatedUserId == Guid.Empty ? NotFound() : NoContent();
+            var updatedUserResult = await _mediator.Send(new UpdateUserCommand(id, dto), cancellationToken);
+            return updatedUserResult.Data == Guid.Empty ? NotFound() : NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken)
         {
-            var isDeleted = await _mediator.Send(new RemoveUserCommand(id), cancellationToken);
-            return isDeleted ? NoContent() : NotFound();
+            var deleteResult = await _mediator.Send(new RemoveUserCommand(id), cancellationToken);
+            return deleteResult.Data ? NoContent() : NotFound();
         }
     }
 }
