@@ -28,7 +28,7 @@ namespace Application.Handlers.ProductHandlers
                 await _unitOfWork.BeginTransactionAsync();
 
                 var existingProduct = await _unitOfWork.ProductRepository.GetByIdAsync(request.id, cancellationToken);
-                if (existingProduct == null)
+                if (existingProduct is null)
                 {
                     await _unitOfWork.RollbackTransactionAsync();
                     return Guid.Empty;

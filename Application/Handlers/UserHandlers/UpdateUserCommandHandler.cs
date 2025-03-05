@@ -28,7 +28,14 @@ namespace Application.Handlers.UserHandlers
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var user = _mapper.Map<UserEntity>(request.dto);
+                var existingUser = await _unitOfWork.UserRepository.GetByIdAsync(request.id, cancellationToken);
+                if (existingUser is null)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    return Guid.Empty;
+                }  
+
+                var user = _mapper.Map(request.dto, existingUser);
                 user.Id = request.id;
 
                 await _unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);

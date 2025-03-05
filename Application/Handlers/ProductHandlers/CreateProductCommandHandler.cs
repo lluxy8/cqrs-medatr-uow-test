@@ -32,7 +32,8 @@ namespace Application.Handlers.ProductHandlers
                 var product = _mapper.Map<ProductEntity>(request.dto);
 
                 var user = await _unitOfWork.UserRepository.GetByIdAsync(request.dto.UserId, cancellationToken);
-                if(user == null)
+                
+                if(user is null)
                 {
                     await _unitOfWork.RollbackTransactionAsync();
                     return Guid.Empty;
