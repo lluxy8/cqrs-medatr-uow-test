@@ -15,9 +15,12 @@ using FluentValidation;
 using Application.Validators;
 using MediatR;
 using Application.Behaviors;
+using API.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory()) 
+    .AddJsonFile(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).FullName, "Presentation", "Config", "appsettings.json"), optional: false, reloadOnChange: true);
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
@@ -26,7 +29,8 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(TransactionBe
 
 builder.Services.AddValidatorsFromAssembly(typeof(UserCreateValidator).Assembly);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddApplicationPart(typeof(UserController).GetTypeInfo().Assembly);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
